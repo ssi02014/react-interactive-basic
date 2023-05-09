@@ -49,8 +49,8 @@ const MouseBasicPage = () => {
   useEffect(() => {
     // 이렇게해도되고 아니면 Box의 props로 넘겨도됌
     if (boxRef.current) {
-      boxRef.current.style.left = `${iconPosition.x}px`;
-      boxRef.current.style.top = `${iconPosition.y}px`;
+      boxRef.current.style.left = `${iconPosition.x.toFixed(2)}px`;
+      boxRef.current.style.top = `${iconPosition.y.toFixed(2)}px`;
     }
   }, [iconPosition]);
 
