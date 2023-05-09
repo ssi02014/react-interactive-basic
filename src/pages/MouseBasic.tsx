@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import butterfly from "../assets/butterfly.gif";
 
+const SPEED = 0.05;
 const MouseBasicPage = () => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const requestRef = useRef<number | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
-  const speed = useRef(1000);
-  const [pageData, setPageData] = useState({
+
+  const [cursorPosition, setCursorPosition] = useState({
     x: 0,
     y: 0,
   });
-  const [boxPosition, setBoxPosition] = useState({
+  const [iconPosition, setIconPosition] = useState({
     x: 0,
     y: 0,
   });
@@ -19,7 +20,7 @@ const MouseBasicPage = () => {
   const mouseEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const { pageX, pageY } = e;
 
-    setPageData({
+    setCursorPosition({
       x: pageX,
       y: pageY,
     });
@@ -27,12 +28,13 @@ const MouseBasicPage = () => {
 
   useEffect(() => {
     const update = () => {
-      const dx = (pageData.x - boxPosition.x) * 0.05;
-      const dy = (pageData.y - boxPosition.y) * 0.05;
+      // 가속과 감속 공식
+      const dx = (cursorPosition.x - iconPosition.x) * SPEED;
+      const dy = (cursorPosition.y - iconPosition.y) * SPEED;
 
-      setBoxPosition({
-        x: boxPosition.x + dx,
-        y: boxPosition.y + dy,
+      setIconPosition({
+        x: iconPosition.x + dx,
+        y: iconPosition.y + dy,
       });
       requestRef.current = requestAnimationFrame(update);
     };
@@ -42,24 +44,28 @@ const MouseBasicPage = () => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [pageData, boxPosition, speed]);
+  }, [cursorPosition, iconPosition]);
 
   useEffect(() => {
     // 이렇게해도되고 아니면 Box의 props로 넘겨도됌
     if (boxRef.current) {
-      boxRef.current.style.left = `${boxPosition.x}px`;
-      boxRef.current.style.top = `${boxPosition.y}px`;
+      boxRef.current.style.left = `${iconPosition.x}px`;
+      boxRef.current.style.top = `${iconPosition.y}px`;
     }
-  }, [boxPosition]);
+  }, [iconPosition]);
 
   return (
     <Wrapper ref={wrapperRef} onMouseMove={mouseEvent}>
       <h1>
-        {pageData.x} : {pageData.y}
+        {cursorPosition.x} : {cursorPosition.y}
       </h1>
-      <Box ref={boxRef} x={boxPosition.x} y={boxPosition.y}>
-        <img src={butterfly} alt="나비GIF" />
-      </Box>
+      {cursorPosition.x || cursorPosition.y ? (
+        <Box ref={boxRef} x={iconPosition.x} y={iconPosition.y}>
+          <img src={butterfly} alt="나비GIF" />
+        </Box>
+      ) : (
+        <></>
+      )}
     </Wrapper>
   );
 };
