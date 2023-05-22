@@ -3,6 +3,7 @@ import styled from "styled-components";
 import butterfly from "../assets/butterfly.gif";
 
 const SPEED = 0.05;
+
 const MouseBasicPage = () => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const requestRef = useRef<number | null>(null);
@@ -36,6 +37,7 @@ const MouseBasicPage = () => {
         x: iconPosition.x + dx,
         y: iconPosition.y + dy,
       });
+
       requestRef.current = requestAnimationFrame(update);
     };
 
@@ -47,7 +49,8 @@ const MouseBasicPage = () => {
   }, [cursorPosition, iconPosition]);
 
   useEffect(() => {
-    // 이렇게해도되고 아니면 Box의 props로 넘겨도됌
+    // 이렇게 해도 되고 아니면 props로 넘겨도됌
+    // 사실 left, top을 바꾸기보다 transform, translate(3d)를 이용하는게 성능상 더 좋음
     if (boxRef.current) {
       boxRef.current.style.left = `${iconPosition.x.toFixed(2)}px`;
       boxRef.current.style.top = `${iconPosition.y.toFixed(2)}px`;
