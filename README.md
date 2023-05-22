@@ -27,6 +27,7 @@ const requestRef = useRef<number | null>(null);
 useEffect(() => {
   const update = () => {
     /* ... */
+    requestRef.current = requestAnimationFrame(update); // 재귀처럼 사용
   };
 
   requestRef.current = requestAnimationFrame(update);
@@ -38,10 +39,19 @@ useEffect(() => {
 }, []);
 ```
 
+<br />
+
 ### setInterval보다 requestAnimationFrame이 더 좋은 이유
 
 - 브라우저가 repaint 이전에 애니메이션 코드를 실행시킴으로써 애니메이션이 더 부드럽게 동작한다.
 - setInterval이나 setTimeout은 `프레임을 신경쓰지 않고 동작한다.` 인자로 주어진 정확한 시간 간격마다 코드를 실행하므로, 프레임과 동기화되지 않을 수 있고, 따라서 애니메이션의 부드러움을 보장하지 않을 수 있다.
   - 만약에 애니메이션 코드가 엄청 복잡해서 실행하는데 `50ms`가 걸린다고 해보자. 그럼 16.6ms동안 프레임을 찍어내지 못했기 때문에 화면이 뚝뚝 끊기는듯한 현상이 발생한다.
+
+<br />
+
+### 애니메이션 left, top과 같은 속성보다 transform(translate[3d]) 속성 활용하는 것이 좋음
+
+- 왜? transform과 translate의 장점은 `GPU 가속`을 통해 하드웨어 가속을 받을 수 있어 성능 면에서 이점이 있다.
+- transform을 사용하면 레이아웃을 다시 계산할 필요가 없다 즉, `reflow`를 방지해 웹 성능 개선에 도움이 될 수 있습니다.
 
 <br />
