@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import contentLogo from "../assets/sirup/content-logo.svg";
 import panelImage from "../assets/sirup/content-panel-pc.webp";
@@ -7,28 +7,69 @@ import ArtistImage from "../assets/sirup/content-artist.png";
 import RollBounceImage from "../assets/sirup/content-rollbounce.png";
 import DownloadLogo from "../assets/sirup/download.svg";
 
+const SPEED = 0.1;
+
 const SirUp = () => {
   const [cursorPosition, setCursorPosition] = useState({
     x: 0,
     y: 0,
   });
 
+  const [targetPosition, setTargetPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const requestRef = useRef<number | null>(null);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    setCursorPosition({
-      x: e.pageX,
-      y: e.pageY,
-    });
-
-    const contentAll = contentRef.current?.querySelectorAll("div");
-
-    contentAll?.forEach((item) => {
-      item.style.left = `${cursorPosition.x}px`;
-    });
+    if (wrapperRef.current) {
+      setCursorPosition({
+        x: e.pageX - wrapperRef.current.clientWidth / 2,
+        y: e.pageY - wrapperRef.current.clientHeight / 2,
+      });
+    }
   };
 
+  const mouseMove = () => {
+    if (contentRef.current) {
+      const contentAll = contentRef.current?.querySelectorAll(
+        "div img"
+      ) as NodeListOf<HTMLImageElement>;
+      const shadow = contentAll[0];
+      const date = contentAll[1];
+      const human = contentAll[2];
+      const textImg = contentAll[3];
+
+      shadow.style.transform = `translateX(${targetPosition.x / 35}px)`;
+      date.style.transform = `translateX(${targetPosition.x / 20}px)`;
+      human.style.transform = `translateX(${-targetPosition.x / 20}px)`;
+      textImg.style.transform = `translateX(${-targetPosition.x / 10}px)`;
+    }
+  };
+
+  const updateLoop = () => {
+    setTargetPosition({
+      x: targetPosition.x + (cursorPosition.x - targetPosition.x) * SPEED,
+      y: targetPosition.y + (cursorPosition.y - targetPosition.y) * SPEED,
+    });
+
+    mouseMove();
+    requestAnimationFrame(updateLoop);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(updateLoop);
+
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [targetPosition, cursorPosition]);
+
   return (
-    <Wrapper onMouseMove={handleMouseMove}>
+    <Wrapper ref={wrapperRef} onMouseMove={handleMouseMove}>
       <h1>
         <img src={contentLogo} />
       </h1>

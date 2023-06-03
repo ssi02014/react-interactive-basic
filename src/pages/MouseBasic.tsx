@@ -27,21 +27,21 @@ const MouseBasicPage = () => {
     });
   };
 
+  const updateLoop = () => {
+    // 가속과 감속 공식
+    const dx = (cursorPosition.x - iconPosition.x) * SPEED;
+    const dy = (cursorPosition.y - iconPosition.y) * SPEED;
+
+    setIconPosition({
+      x: iconPosition.x + dx,
+      y: iconPosition.y + dy,
+    });
+
+    requestRef.current = requestAnimationFrame(updateLoop);
+  };
+
   useEffect(() => {
-    const update = () => {
-      // 가속과 감속 공식
-      const dx = (cursorPosition.x - iconPosition.x) * SPEED;
-      const dy = (cursorPosition.y - iconPosition.y) * SPEED;
-
-      setIconPosition({
-        x: iconPosition.x + dx,
-        y: iconPosition.y + dy,
-      });
-
-      requestRef.current = requestAnimationFrame(update);
-    };
-
-    requestRef.current = requestAnimationFrame(update);
+    requestRef.current = requestAnimationFrame(updateLoop);
 
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
