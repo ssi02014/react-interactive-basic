@@ -21,7 +21,7 @@ function App() {
           <Link to="/sir-up">3. SirUp 페이지</Link>
         </li>
         <li>
-          <Link to="/sir-up">4. Scroll 페이지</Link>
+          <Link to="/scroll">4. Scroll 페이지</Link>
         </li>
       </ListWrapper>
       <Suspense fallback={<div>로딩중</div>}>

@@ -9,7 +9,7 @@ const Scroll = () => {
   };
 
   useEffect(() => {
-    const scroll = (e: Event) => {
+    const scroll = () => {
       const percent = getPercent(
         window.scrollY,
         document.body.scrollHeight - window.innerHeight
