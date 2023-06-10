@@ -6,33 +6,19 @@ const MouseBasicPage = React.lazy(() => import("./pages/MouseBasic"));
 const MouseOverPage = React.lazy(() => import("./pages/MouseOver"));
 const SirUpPage = React.lazy(() => import("./pages/SirUp"));
 const ScrollPage = React.lazy(() => import("./pages/Scroll"));
+const BlogPage = React.lazy(() => import("./pages/Blog"));
 
 function App() {
   return (
-    <>
-      <ListWrapper>
-        <li>
-          <Link to="/">1. MouseBasic 페이지</Link>
-        </li>
-        <li>
-          <Link to="/mouse-over">2. MouseOver 페이지</Link>
-        </li>
-        <li>
-          <Link to="/sir-up">3. SirUp 페이지</Link>
-        </li>
-        <li>
-          <Link to="/scroll">4. Scroll 페이지</Link>
-        </li>
-      </ListWrapper>
-      <Suspense fallback={<div>로딩중</div>}>
-        <Routes>
-          <Route path="/" element={<MouseBasicPage />} />
-          <Route path="/mouse-over" element={<MouseOverPage />} />
-          <Route path="/sir-up" element={<SirUpPage />} />
-          <Route path="/scroll" element={<ScrollPage />} />
-        </Routes>
-      </Suspense>
-    </>
+    <Suspense fallback={<div>로딩중</div>}>
+      <Routes>
+        <Route path="/" element={<MouseBasicPage />} />
+        <Route path="/mouse-over" element={<MouseOverPage />} />
+        <Route path="/sir-up" element={<SirUpPage />} />
+        <Route path="/scroll" element={<ScrollPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+      </Routes>
+    </Suspense>
   );
 }
 
