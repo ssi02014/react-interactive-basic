@@ -9,6 +9,8 @@ const BlogPage = React.lazy(() => import("./pages/Blog"));
 const HorizontalParallaxPage = React.lazy(
   () => import("./pages/HorizontalParallax")
 );
+const Parallax1Page = React.lazy(() => import("./pages/ParallaxOne"));
+const Parallax2Page = React.lazy(() => import("./pages/ParallaxTwo"));
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
         <Route path="/sir-up" element={<SirUpPage />} />
         <Route path="/scroll" element={<ScrollPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/parallax1" element={<Parallax1Page />} />
+        <Route path="/parallax2" element={<Parallax2Page />} />
+
         <Route path="/horizontal" element={<HorizontalParallaxPage />} />
       </Routes>
     </Suspense>
