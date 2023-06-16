@@ -1,65 +1,105 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 
+const SPEED = 0.1;
+
 const ParallaxOne = () => {
-  const image1Ref = useRef<HTMLDivElement | null>(null);
-  const image2Ref = useRef<HTMLDivElement | null>(null);
-  const image3Ref = useRef<HTMLDivElement | null>(null);
-  const image4Ref = useRef<HTMLDivElement | null>(null);
-  const image5Ref = useRef<HTMLDivElement | null>(null);
-  const image6Ref = useRef<HTMLDivElement | null>(null);
+  const imageWrapperRef = useRef<HTMLDivElement | null>(null);
+  const subImageWrapperRef = useRef<HTMLDivElement | null>(null);
+  const requestAnimationRef = useRef<number | null>(null);
+  const targetX = useRef(0);
+
+  const [cursorPosition, setCursorPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
-    const refs = [
-      image1Ref,
-      image2Ref,
-      image3Ref,
-      image4Ref,
-      image5Ref,
-      image6Ref,
-    ];
+    if (!imageWrapperRef.current || !subImageWrapperRef.current) return;
+
+    const imageAll: NodeListOf<HTMLDivElement> =
+      imageWrapperRef.current.querySelectorAll(".parallaxImage");
 
     const scroll = () => {
-      if (
-        !image1Ref.current ||
-        !image2Ref.current ||
-        !image3Ref.current ||
-        !image4Ref.current ||
-        !image5Ref.current ||
-        !image6Ref.current
-      ) {
-        return;
-      }
-
       const scrollNum = window.scrollY;
+      const totalNum = imageAll.length;
 
-      console.log(scrollNum);
-      // refs.map((ref, idx) => {
-      //   if (ref.current) {
-      //     console.log(idx);
-      //   }
-      // });
+      [...imageAll]
+        .filter((_, idx) => idx < 4)
+        .forEach((item, idx) => {
+          item.style.transform = `translateY(${
+            -scrollNum / (2 * (totalNum - idx))
+          }px)`;
+        });
+    };
+
+    const mouseMove = (e: MouseEvent) => {
+      const x = e.pageX - window.innerWidth / 2;
+
+      setCursorPosition({ ...cursorPosition, x });
     };
 
     window.addEventListener("scroll", scroll);
-    () => window.removeEventListener("scroll", scroll);
+    window.addEventListener("mousemove", mouseMove);
+
+    return () => {
+      window.removeEventListener("scroll", scroll);
+      window.removeEventListener("mousemove", mouseMove);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!imageWrapperRef.current || !subImageWrapperRef.current) return;
+
+    const imageAll: NodeListOf<HTMLDivElement> =
+      imageWrapperRef.current.querySelectorAll(".parallaxImage");
+    const subImage = subImageWrapperRef.current;
+
+    const updateLoop = () => {
+      const scrollNum = window.scrollY;
+      const totalNum = imageAll.length;
+
+      targetX.current += (cursorPosition.x - targetX.current) * SPEED;
+
+      imageAll[4].style.transform = `scale(1.05) translate(${
+        -targetX.current / 200
+      }px, ${-scrollNum / (2 * (totalNum - 4))}px)`;
+
+      imageAll[5].style.transform = `scale(1.05) translate(${
+        -targetX.current / 100
+      }px, ${-scrollNum / (2 * (totalNum - 5))}px)`;
+
+      subImage.style.transform = `scale(1.1) translateX(${
+        -targetX.current / 20
+      }px )`;
+
+      requestAnimationRef.current = requestAnimationFrame(updateLoop);
+    };
+
+    requestAnimationRef.current = requestAnimationFrame(updateLoop);
+
+    return () => {
+      if (requestAnimationRef.current) {
+        cancelAnimationFrame(requestAnimationRef.current);
+      }
+    };
+  }, [cursorPosition.x]);
 
   return (
     <Wrapper>
       <MainWrapper>
-        <ImageWrapper>
-          <MainParallaxImageWrapper ref={image1Ref} />
-          <MainParallaxImageWrapper ref={image2Ref} />
-          <MainParallaxImageWrapper ref={image3Ref} />
-          <MainParallaxImageWrapper ref={image4Ref} />
-          <MainParallaxImageWrapper ref={image5Ref} />
-          <MainParallaxImageWrapper ref={image6Ref} />
+        <ImageWrapper ref={imageWrapperRef}>
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
         </ImageWrapper>
       </MainWrapper>
 
       <SubWrapper>
-        <SubParallaxImageWrapper />
+        <SubParallaxImageWrapper ref={subImageWrapperRef} />
         <SubInnerWrapper>
           <SubContentWrapper>
             <p>
@@ -160,12 +200,14 @@ const MainParallaxImageWrapper = styled.div`
     background-image: url(src/assets/parallax1/main_4.png);
   }
 
-  &:nth-child(5) {
+  &:nth-child(6) {
     background-image: url(src/assets/parallax1/main_5.png);
   }
 `;
 
-const SubWrapper = styled.section``;
+const SubWrapper = styled.section`
+  background: linear-gradient(black, #340e23, black);
+`;
 
 const SubInnerWrapper = styled.div`
   position: relative;
