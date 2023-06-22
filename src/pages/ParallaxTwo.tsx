@@ -2,65 +2,47 @@ import { useEffect, useRef } from "react";
 import { styled } from "styled-components";
 
 const ParallaxOne = () => {
-  const image1Ref = useRef<HTMLDivElement | null>(null);
-  const image2Ref = useRef<HTMLDivElement | null>(null);
-  const image3Ref = useRef<HTMLDivElement | null>(null);
-  const image4Ref = useRef<HTMLDivElement | null>(null);
-  const image5Ref = useRef<HTMLDivElement | null>(null);
-  const image6Ref = useRef<HTMLDivElement | null>(null);
+  const imageWrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const refs = [
-      image1Ref,
-      image2Ref,
-      image3Ref,
-      image4Ref,
-      image5Ref,
-      image6Ref,
-    ];
+    if (!imageWrapperRef.current) return;
+
+    const imageAll: NodeListOf<HTMLDivElement> =
+      imageWrapperRef.current.querySelectorAll(".parallaxImage");
 
     const scroll = () => {
-      if (
-        !image1Ref.current ||
-        !image2Ref.current ||
-        !image3Ref.current ||
-        !image4Ref.current ||
-        !image5Ref.current ||
-        !image6Ref.current
-      ) {
-        return;
-      }
-
       const scrollNum = window.scrollY;
+      const totalNum = imageAll.length;
 
-      refs.map((ref, idx) => {
-        if (ref.current) {
-          ref.current.style.transform = `translateY(${
-            -scrollNum / (2 * (6 - idx))
-          }px)`;
-        }
+      [...imageAll].forEach((item, idx) => {
+        item.style.transform = `perspective(400px) translate3d(0, 0, ${
+          scrollNum / (10 * (totalNum - idx))
+        }px)`;
       });
     };
 
     window.addEventListener("scroll", scroll);
-    () => window.removeEventListener("scroll", scroll);
+
+    return () => {
+      window.removeEventListener("scroll", scroll);
+    };
   }, []);
 
   return (
     <Wrapper>
       <MainWrapper>
-        <ImageWrapper>
-          <MainParallaxImageWrapper ref={image1Ref} />
-          <MainParallaxImageWrapper ref={image2Ref} />
-          <MainParallaxImageWrapper ref={image3Ref} />
-          <MainParallaxImageWrapper ref={image4Ref} />
-          <MainParallaxImageWrapper ref={image5Ref} />
-          <MainParallaxImageWrapper ref={image6Ref} />
+        <ImageWrapper ref={imageWrapperRef}>
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
+          <MainParallaxImageWrapper className="parallaxImage" />
         </ImageWrapper>
       </MainWrapper>
 
       <SubWrapper>
-        <SubParallaxImageWrapper />
         <SubInnerWrapper>
           <SubContentWrapper>
             <p>
@@ -83,6 +65,32 @@ const ParallaxOne = () => {
             </p>
           </SubContentWrapper>
         </SubInnerWrapper>
+      </SubWrapper>
+      <SubWrapper>
+        <SubInnerWrapper>
+          <SubContentWrapper>
+            <p>
+              "On the other hand, we denounce with righteous indignation and
+              dislike men who are so beguiled and demoralized by the charms of
+              pleasure of the moment, so blinded by desire, that they cannot
+              foresee the pain and trouble that are bound to ensue; and equal
+              blame belongs to those who fail in their duty through weakness of
+              will, which is the same as saying through shrinking from toil and
+              pain. These cases are perfectly simple and easy to distinguish. In
+              a free hour, when our power of choice is untrammelled and when
+              nothing prevents our being able to do what we like best, every
+              pleasure is to be welcomed and every pain avoided. But in certain
+              circumstances and owing to the claims of duty or the obligations
+              of business it will frequently occur that pleasures have to be
+              repudiated and annoyances accepted. The wise man therefore always
+              holds in these matters to this principle of selection: he rejects
+              pleasures to secure other greater pleasures, or else he endures
+              pains to avoid worse pains."
+            </p>
+          </SubContentWrapper>
+        </SubInnerWrapper>
+      </SubWrapper>
+      <SubWrapper>
         <SubInnerWrapper>
           <SubContentWrapper>
             <p>
@@ -121,6 +129,8 @@ const Wrapper = styled.main`
 `;
 
 const MainWrapper = styled.section`
+  position: fixed;
+  top: 0;
   padding-bottom: 50px;
 `;
 
@@ -129,7 +139,7 @@ const ImageWrapper = styled.div`
   overflow-y: hidden;
 
   @media only screen and (max-width: 768px) {
-    height: 500px;
+    height: 70vh;
   }
 `;
 
@@ -140,6 +150,8 @@ const MainParallaxImageWrapper = styled.div`
   background-position: top center;
   background-size: cover;
   background-repeat: no-repeat;
+  perspective: 400px;
+  transition: all 0.3s ease-out;
 
   &:nth-child(1) {
     background-image: url(src/assets/parallax1/main_0.png);
@@ -161,17 +173,23 @@ const MainParallaxImageWrapper = styled.div`
     background-image: url(src/assets/parallax1/main_4.png);
   }
 
-  &:nth-child(5) {
+  &:nth-child(6) {
     background-image: url(src/assets/parallax1/main_5.png);
+  }
+
+  &:nth-child(7) {
+    background-image: url(src/assets/parallax1/main_6.png);
   }
 `;
 
-const SubWrapper = styled.section``;
+const SubWrapper = styled.section`
+  z-index: 10;
+  padding-top: 100vh;
+  min-height: 60vh;
+`;
 
 const SubInnerWrapper = styled.div`
   position: relative;
-  margin: 0 auto;
-  padding: 100px 0 300px;
 `;
 
 const SubContentWrapper = styled.div`
@@ -190,15 +208,6 @@ const SubContentWrapper = styled.div`
   @media only screen and (max-width: 768px) {
     width: 100%;
   }
-`;
-
-const SubParallaxImageWrapper = styled.div`
-  position: relative;
-  background: url(src/assets/parallax1/main_6.png) bottom center no-repeat;
-  background-size: cover;
-  height: 400px;
-  width: 100%;
-  top: -400px;
 `;
 
 export default ParallaxOne;
